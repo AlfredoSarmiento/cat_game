@@ -1,0 +1,273 @@
+/* Layout: one full-height stage. Start and win screens center a short stack
+   around a wobbling cat sticker; the play screen is a slim score bar above a
+   free field where one cat at a time pops up. */
+:root {
+  --bg: #bdeedd;
+  --surface: #fffdf7;
+  --field: rgba(255, 255, 255, 0.45);
+  --ink: #1e1a3b;
+  --muted: #4a4570;
+  --accent: #d81b60;
+  --accent-ink: #ffffff;
+  --accent-edge: #8f0f3d;
+  --fill: #ffb703;
+  --track: rgba(30, 26, 59, 0.14);
+  --outline: #ffffff;
+  --shadow: rgba(30, 26, 59, 0.28);
+  --font-display: ui-rounded, "SF Pro Rounded", "Arial Rounded MT Bold", "Hiragino Maru Gothic ProN", system-ui, sans-serif;
+  --font-body: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --sticker: drop-shadow(3px 0 0 var(--outline)) drop-shadow(-3px 0 0 var(--outline))
+    drop-shadow(0 3px 0 var(--outline)) drop-shadow(0 -3px 0 var(--outline))
+    drop-shadow(0 8px 10px var(--shadow));
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1b1736;
+    --surface: #2a2450;
+    --field: rgba(255, 255, 255, 0.06);
+    --ink: #f5f0ff;
+    --muted: #bdb6e0;
+    --accent: #ff6b9d;
+    --accent-ink: #1b1736;
+    --accent-edge: #a3345f;
+    --fill: #ffc83d;
+    --track: rgba(245, 240, 255, 0.18);
+    --shadow: rgba(0, 0, 0, 0.5);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #1b1736;
+  --surface: #2a2450;
+  --field: rgba(255, 255, 255, 0.06);
+  --ink: #f5f0ff;
+  --muted: #bdb6e0;
+  --accent: #ff6b9d;
+  --accent-ink: #1b1736;
+  --accent-edge: #a3345f;
+  --fill: #ffc83d;
+  --track: rgba(245, 240, 255, 0.18);
+  --shadow: rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+[hidden] { display: none !important; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  padding-block: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+}
+
+#app { height: 100%; }
+
+.screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.center {
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  text-align: center;
+}
+
+h1 {
+  margin: 0;
+  font: 900 clamp(2.4rem, 9vw, 4.2rem) / 1 var(--font-display);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.lede {
+  margin: 0;
+  max-width: 28ch;
+  font-size: 1.25rem;
+  line-height: 1.4;
+  color: var(--muted);
+  text-wrap: balance;
+}
+
+.lede strong { color: var(--ink); }
+
+.error {
+  margin: 0;
+  max-width: 36ch;
+  padding: 12px 16px;
+  border-radius: 16px;
+  background: var(--surface);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.btn {
+  padding: 0.8em 1.8em;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font: 800 1.5rem / 1 var(--font-display);
+  box-shadow: 0 6px 0 var(--accent-edge);
+  cursor: pointer;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+
+.btn:hover { transform: translateY(-1px); box-shadow: 0 7px 0 var(--accent-edge); }
+.btn:active { transform: translateY(5px); box-shadow: 0 1px 0 var(--accent-edge); }
+
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+
+/* Cat sticker shown on the start and win screens */
+.mascot {
+  width: auto;
+  height: min(30vh, 180px);
+  max-width: 60vw;
+  object-fit: contain;
+  transform: rotate(-6deg);
+  filter: var(--sticker);
+  animation: bob 2.4s ease-in-out infinite;
+}
+
+/* Play screen */
+#screen-play { gap: 12px; }
+
+.hud {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px 10px 22px;
+  border-radius: 999px;
+  background: var(--surface);
+}
+
+.count {
+  margin: 0;
+  font: 800 1.6rem / 1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.bar {
+  flex: 1;
+  min-width: 0;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--track);
+  overflow: hidden;
+}
+
+#bar-fill {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--fill);
+  transition: width 0.2s ease-out;
+}
+
+.chip {
+  padding: 8px 14px;
+  border: 2px solid var(--muted);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font: 700 0.9rem / 1 var(--font-body);
+  cursor: pointer;
+}
+
+.chip[aria-pressed="false"] { text-decoration: line-through; opacity: 0.65; }
+
+#field {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 28px;
+  background: var(--field);
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.cat {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  transform: rotate(var(--rot, 0deg));
+  animation: pop 0.22s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+
+.cat img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: var(--sticker);
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+.cat.caught {
+  pointer-events: none;
+  animation: caught 0.2s ease-in forwards;
+}
+
+/* Win screen */
+.confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.confetti i {
+  position: absolute;
+  top: -20px;
+  width: 10px;
+  height: 16px;
+  border-radius: 2px;
+  animation: fall linear forwards;
+}
+
+@keyframes pop {
+  from { transform: rotate(var(--rot, 0deg)) scale(0.3); opacity: 0; }
+  to { transform: rotate(var(--rot, 0deg)) scale(1); opacity: 1; }
+}
+
+@keyframes caught {
+  from { transform: rotate(var(--rot, 0deg)) scale(1); opacity: 1; }
+  to { transform: rotate(var(--rot, 0deg)) scale(1.5); opacity: 0; }
+}
+
+@keyframes bob {
+  0%, 100% { transform: rotate(-6deg) translateY(0); }
+  50% { transform: rotate(4deg) translateY(-8px); }
+}
+
+@keyframes fall {
+  to { transform: translate(var(--drift, 0px), 110vh) rotate(720deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cat, .mascot { animation: none; }
+  .cat.caught { animation: none; opacity: 0; }
+  .btn { transition: none; }
+  #bar-fill { transition: none; }
+}

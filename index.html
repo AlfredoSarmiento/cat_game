@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Cat Clicker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="app">
+    <section id="screen-start" class="screen center">
+      <img id="mascot-start" class="mascot" alt="" hidden>
+      <h1>Cat Clicker</h1>
+      <p class="lede">Catch <strong id="goal-label">10</strong> cats to win.</p>
+      <button id="btn-start" class="btn" type="button">Start</button>
+      <p id="start-error" class="error" role="alert" hidden>No cat pictures found. Add images to the cats folder and list their names in cats/cats.js.</p>
+    </section>
+
+    <section id="screen-play" class="screen" hidden>
+      <header class="hud">
+        <p class="count" aria-live="polite"><span id="score">0</span> / <span id="goal">10</span></p>
+        <div class="bar" aria-hidden="true"><div id="bar-fill"></div></div>
+        <button id="btn-sound" class="chip" type="button" aria-pressed="true">Sound</button>
+      </header>
+      <div id="field"></div>
+    </section>
+
+    <section id="screen-win" class="screen center" hidden>
+      <div id="confetti" class="confetti" aria-hidden="true"></div>
+      <img id="mascot-win" class="mascot" alt="" hidden>
+      <h1>You win!</h1>
+      <p id="win-message" class="lede"></p>
+      <button id="btn-again" class="btn" type="button">Play again</button>
+    </section>
+  </main>
+
+  <script src="cats/cats.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
